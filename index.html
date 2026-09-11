@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>La Gran Apuesta de Borja - Dashboard & Juegos</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Quicksand & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        borja: {
+                            50: '#F0F7FF',
+                            100: '#E0EFFE',
+                            200: '#BAE0FD',
+                            300: '#7CD0FC',
+                            400: '#36BAF8',
+                            500: '#0CA3E8',
+                            600: '#0082C8',
+                            700: '#0068A3',
+                            cream: '#FFFDF9',
+                            softYellow: '#FFF4D6',
+                            softMint: '#E6F9F3',
+                            softRose: '#FFEAEF',
+                            pastelPurple: '#F3E8FF',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
+                        'card': '0 4px 20px 0 rgba(0, 0, 0, 0.04)',
+                        'hover': '0 12px 28px -4px rgba(12, 163, 232, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F8FAF8;
+            background-image: radial-gradient(#0CA3E8 0.4px, transparent 0.4px), radial-gradient(#0CA3E8 0.4px, #F8FAF8 0.4px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            color: #2D3748;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .tab-btn.active {
+            background-color: #0CA3E8;
+            color: white;
+            box-shadow: 0 4px 14px rgba(12, 163, 232, 0.35);
+        }
+
+        /* Ocultar scrollbars en carruseles táctiles de móvil */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Custom scrollbar para escritorios */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-4px) rotate(1deg); }
+        }
+
+        .floating-element {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12 font-sans selection:bg-borja-200">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-gradient-to-r from-borja-600 via-sky-500 to-indigo-600 text-white text-center py-2 px-3 text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center gap-1.5 shadow-sm">
+        <span class="inline-block animate-bounce text-sm">🍼</span>
+        <span class="truncate">¡Baby Shower de Borja! — Revisa las apuestas</span>
+        <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold whitespace-nowrap">13 Apostadores</span>
+    </div>
+
+    <!-- Main Header -->
+    <header class="max-w-6xl mx-auto px-4 pt-5 pb-3 text-center">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-borja-100 text-borja-700 font-bold text-xs mb-2 shadow-sm border border-borja-200">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-borja-500"></i>
+            <span>EL PRODE OFICIAL</span>
+        </div>
+        
+        <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-extrabold text-slate-800 tracking-tight leading-tight">
+            La Apuesta de <span class="text-transparent bg-clip-text bg-gradient-to-r from-borja-500 to-blue-600">Borja</span> 👶🏻✨
+        </h1>
+        
+        <p class="text-slate-600 max-w-xl mx-auto mt-2 text-xs sm:text-base leading-relaxed px-2">
+            Descubre cuándo creen que nacerá, cuánto pesará y las travesuras preparadas para la Chela y Maya.
+        </p>
+
+        <!-- Quick Info Badges (Horizontal Swipe on Mobile) -->
+        <div class="flex overflow-x-auto no-scrollbar snap-x sm:flex-wrap justify-start sm:justify-center items-center gap-2.5 mt-4 pb-1 px-1">
+            <div class="snap-start flex-shrink-0 glass-card px-3.5 py-2 rounded-2xl flex items-center gap-2 shadow-card border border-white">
+                <div class="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">🗓️</div>
+                <div class="text-left">
+                    <p class="text-[10px] text-slate-400 font-semibold leading-none">Rango Estimado</p>
+                    <p class="text-xs sm:text-sm font-bold text-slate-700 mt-0.5">16 Oct — 06 Nov</p>
+                </div>
+            </div>
+
+            <div class="snap-start flex-shrink-0 glass-card px-3.5 py-2 rounded-2xl flex items-center gap-2 shadow-card border border-white">
+                <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">⚖️</div>
+                <div class="text-left">
+                    <p class="text-[10px] text-slate-400 font-semibold leading-none">Peso Promedio</p>
+                    <p class="text-xs sm:text-sm font-bold text-slate-700 mt-0.5">3.32 kg</p>
+                </div>
+            </div>
+
+            <div class="snap-start flex-shrink-0 glass-card px-3.5 py-2 rounded-2xl flex items-center gap-2 shadow-card border border-white">
+                <div class="w-7 h-7 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-xs">☀️</div>
+                <div class="text-left">
+                    <p class="text-[10px] text-slate-400 font-semibold leading-none">Turno Preferido</p>
+                    <p class="text-xs sm:text-sm font-bold text-slate-700 mt-0.5">85% AM</p>
+                </div>
+            </div>
+
+            <div class="snap-start flex-shrink-0 glass-card px-3.5 py-2 rounded-2xl flex items-center gap-2 shadow-card border border-white">
+                <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs">🐶</div>
+                <div class="text-left">
+                    <p class="text-[10px] text-slate-400 font-semibold leading-none">Mejor Amigo</p>
+                    <p class="text-xs sm:text-sm font-bold text-slate-700 mt-0.5">Chela (77%)</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar (Swipeable Pills on Mobile) -->
+    <nav class="max-w-4xl mx-auto px-3 my-3 sticky top-2 z-40">
+        <div class="glass-card p-1.5 rounded-2xl shadow-lg border border-white/90 flex items-center overflow-x-auto no-scrollbar gap-1.5 snap-x">
+            <button onclick="switchTab('calendario')" id="tab-calendario" class="tab-btn active snap-start flex-shrink-0 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-600 whitespace-nowrap">
+                <i data-lucide="calendar" class="w-4 h-4"></i>
+                <span>Calendario</span>
+            </button>
+            <button onclick="switchTab('simulador')" id="tab-simulador" class="tab-btn snap-start flex-shrink-0 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-600 whitespace-nowrap">
+                <i data-lucide="trophy" class="w-4 h-4"></i>
+                <span>Calculadora</span>
+            </button>
+            <button onclick="switchTab('duelo')" id="tab-duelo" class="tab-btn snap-start flex-shrink-0 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-600 whitespace-nowrap">
+                <i data-lucide="swords" class="w-4 h-4"></i>
+                <span>Cris vs Javi</span>
+            </button>
+            <button onclick="switchTab('galeria')" id="tab-galeria" class="tab-btn snap-start flex-shrink-0 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-600 whitespace-nowrap">
+                <i data-lucide="tickets" class="w-4 h-4"></i>
+                <span>Boletos</span>
+            </button>
+            <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn snap-start flex-shrink-0 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-600 whitespace-nowrap">
+                <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                <span>Estadísticas</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-3 sm:px-4">
+
+        <!-- ================= SECTION 1: CALENDARIO ================= -->
+        <section id="sec-calendario" class="tab-content space-y-4">
+            <div class="glass-card p-4 sm:p-6 rounded-3xl shadow-soft border border-white">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
+                            <span>📅 Fechas Apostadas</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Toca cualquier día marcado para ver quiénes apostaron y sus detalles.</p>
+                    </div>
+
+                    <div class="inline-flex items-center gap-2 bg-slate-100 p-1 rounded-xl text-[11px] font-semibold self-start sm:self-auto">
+                        <span class="px-2.5 py-1 rounded-lg bg-white shadow-sm text-borja-600 font-bold">Oct & Nov 2026</span>
+                        <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-md">⭐ 13 Apuestas</span>
+                    </div>
+                </div>
+
+                <!-- Octubre 2026 Grid -->
+                <div class="mb-6">
+                    <h3 class="font-heading text-base sm:text-lg font-bold text-borja-600 mb-2 flex items-center gap-1.5">
+                        <i data-lucide="calendar-days" class="w-4 h-4"></i> Octubre 2026
+                    </h3>
+                    
+                    <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-xs font-bold text-slate-400 mb-1">
+                        <div>LUN</div><div>MAR</div><div>MIÉ</div><div>JUE</div><div>VIE</div><div>SÁB</div><div>DOM</div>
+                    </div>
+
+                    <div class="grid grid-cols-7 gap-1 sm:gap-2" id="grid-octubre">
+                        <!-- JS populated -->
+                    </div>
+                </div>
+
+                <!-- Noviembre 2026 Grid -->
+                <div>
+                    <h3 class="font-heading text-base sm:text-lg font-bold text-borja-600 mb-2 flex items-center gap-1.5">
+                        <i data-lucide="calendar-days" class="w-4 h-4"></i> Noviembre 2026
+                    </h3>
+                    
+                    <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-xs font-bold text-slate-400 mb-1">
+                        <div>LUN</div><div>MAR</div><div>MIÉ</div><div>JUE</div><div>VIE</div><div>SÁB</div><div>DOM</div>
+                    </div>
+
+                    <div class="grid grid-cols-7 gap-1 sm:gap-2" id="grid-noviembre">
+                        <!-- JS populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Date Info -->
+            <div id="date-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+                <div class="glass-card bg-white max-w-lg w-full rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-white animate-in slide-in-from-bottom sm:zoom-in duration-200 max-h-[90vh] flex flex-col">
+                    <div class="bg-gradient-to-r from-borja-500 to-blue-600 p-4 text-white flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase tracking-wider text-borja-100 font-bold">Detalle del Día</span>
+                            <h4 id="modal-date-title" class="text-xl sm:text-2xl font-bold font-heading">31 de Octubre</h4>
+                        </div>
+                        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div id="modal-date-body" class="p-4 sm:p-6 overflow-y-auto space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="p-3 bg-slate-50 border-t border-slate-100 text-right">
+                        <button onclick="closeModal()" class="w-full sm:w-auto px-5 py-2.5 bg-borja-500 text-white font-bold rounded-xl text-sm hover:bg-borja-600 transition-colors shadow-md">
+                            Entendido
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: SIMULADOR DE GANADORES ================= -->
+        <section id="sec-simulador" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <!-- Inputs Form -->
+                <div class="lg:col-span-5 glass-card p-4 sm:p-6 rounded-3xl shadow-soft border border-white space-y-4">
+                    <div class="border-b border-slate-100 pb-3">
+                        <div class="inline-block px-2.5 py-0.5 bg-amber-100 text-amber-700 text-[11px] font-bold rounded-full mb-1">
+                            ⚡ DIA DEL NACIMIENTO
+                        </div>
+                        <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Datos Reales de Borja</h2>
+                        <p class="text-xs text-slate-500">Ingresa los datos reales cuando nazca Borja para calcular el ganador.</p>
+                    </div>
+
+                    <form id="sim-form" onsubmit="event.preventDefault(); calculateWinner();" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Fecha Real de Nacimiento</label>
+                            <input type="date" id="sim-date" value="2026-10-25" min="2026-10-01" max="2026-11-30" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-700 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-borja-400 bg-white">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Hora / Jornada</label>
+                                <select id="sim-time" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-700 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-borja-400 bg-white">
+                                    <option value="AM">Día (AM)</option>
+                                    <option value="PM">Noche (PM)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Peso Real (Kg)</label>
+                                <input type="number" step="0.05" id="sim-weight" value="3.4" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-700 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-borja-400 bg-white">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Color Ojos</label>
+                                <select id="sim-eyes" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-700 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-borja-400 bg-white">
+                                    <option value="azules">Azules / Verdes</option>
+                                    <option value="cafe">Café / Oscuros</option>
+                                    <option value="amarillos">Amarillos</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Color Pelo</label>
+                                <select id="sim-hair" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-700 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-borja-400 bg-white">
+                                    <option value="rubio">Rubio</option>
+                                    <option value="castano">Castaño</option>
+                                    <option value="ginger">Ginger</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">¿A quién se parece más?</label>
+                            <select id="sim-resemble" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-700 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-borja-400 bg-white">
+                                <option value="50/50">50/50 Mezcla Perfecta</option>
+                                <option value="Javi">Más a Javi</option>
+                                <option value="Cris">Más a Cris</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-borja-500 to-blue-600 text-white font-extrabold rounded-xl shadow-lg shadow-borja-500/25 hover:opacity-95 transition-all text-sm flex items-center justify-center gap-2 mt-2">
+                            <i data-lucide="calculator" class="w-4 h-4"></i>
+                            <span>Calcular Posiciones</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Leaderboard Results -->
+                <div class="lg:col-span-7 glass-card p-4 sm:p-6 rounded-3xl shadow-soft border border-white flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                            <h2 class="font-heading text-lg sm:text-2xl font-bold text-slate-800">
+                                🏆 Tabla de Posiciones
+                            </h2>
+                            <span class="text-[10px] sm:text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-bold">100 Pts Máx</span>
+                        </div>
+
+                        <!-- Top 3 Podium Cards -->
+                        <div id="podium-container" class="grid grid-cols-3 gap-1.5 sm:gap-3 mb-5">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <!-- Full Ranking Table -->
+                        <div class="overflow-x-auto -mx-2 sm:mx-0">
+                            <table class="w-full text-left text-xs min-w-[280px]">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-100">
+                                        <th class="py-2 px-1.5">#</th>
+                                        <th class="py-2 px-1.5">Apostador</th>
+                                        <th class="py-2 px-1.5">Fecha</th>
+                                        <th class="py-2 px-1.5 text-right">Puntaje</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ranking-tbody" class="divide-y divide-slate-100 font-semibold text-slate-700">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Winner Certificate trigger -->
+                    <div id="winner-banner" class="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-amber-100 via-orange-50 to-amber-100 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-2xl sm:text-3xl">👑</span>
+                            <div>
+                                <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">NOSTRADAMUS DE BORJA</p>
+                                <p id="winner-name-display" class="font-heading text-xs sm:text-sm font-extrabold text-amber-950">¡Calcula para descubrir al ganador!</p>
+                            </div>
+                        </div>
+                        <button onclick="triggerConfetti()" class="w-full sm:w-auto px-3.5 py-2 bg-amber-500 text-white rounded-xl font-bold text-xs shadow hover:bg-amber-600 transition-colors flex items-center justify-center gap-1">
+                            <span>🎉 Celebrar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: DUELO CRIS VS JAVI ================= -->
+        <section id="sec-duelo" class="tab-content hidden space-y-4">
+            <div class="glass-card p-4 sm:p-6 rounded-3xl shadow-soft border border-white">
+                <div class="text-center max-w-xl mx-auto mb-6">
+                    <span class="px-3 py-1 bg-rose-100 text-rose-600 font-bold text-[10px] sm:text-xs rounded-full uppercase tracking-wider">La Encuesta de Papás</span>
+                    <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1">🥊 Duelo: Cris vs Javi</h2>
+                    <p class="text-xs text-slate-500 mt-1">¿Quién será el más mimador? ¿Quién arrancará de los pañales?</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <!-- Question 1: Madrugadas -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-slate-800 text-sm sm:text-base">🌙 Experto/a en Madrugadas</span>
+                            <span class="text-[10px] text-slate-400">13 votos</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">¿Quién levantará a Borja a las 3 AM?</p>
+                        
+                        <div class="space-y-2 pt-1">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-blue-600">Cris (5 votos)</span>
+                                    <span>38%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-blue-500 h-full rounded-full" style="width: 38%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-purple-600">Ambos por igual (5)</span>
+                                    <span>38%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-purple-500 h-full rounded-full" style="width: 38%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-pink-600">Javi (3 votos)</span>
+                                    <span>24%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-pink-500 h-full rounded-full" style="width: 24%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 2: Pañales -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-slate-800 text-sm sm:text-base">💩 Miedoso/a con Pañales</span>
+                            <span class="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold">¡Ganador Claro!</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">¿A quién le dará alergia el mudador?</p>
+                        
+                        <div class="space-y-2 pt-1">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-blue-600">Cris (9 votos) 🏆</span>
+                                    <span>69%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-blue-500 h-full rounded-full" style="width: 69%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-pink-600">Javi (2 votos)</span>
+                                    <span>15%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-pink-500 h-full rounded-full" style="width: 15%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-purple-600">Ambos (2 votos)</span>
+                                    <span>15%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-purple-500 h-full rounded-full" style="width: 15%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 3: Paparazzi -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-slate-800 text-sm sm:text-base">📸 Paparazzi Oficial</span>
+                            <span class="text-[10px] bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-bold">Javi Lidera</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">¿Quién llenará la memoria del celular?</p>
+                        
+                        <div class="space-y-2 pt-1">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-pink-600">Javi (7 votos) 👑</span>
+                                    <span>54%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-pink-500 h-full rounded-full" style="width: 54%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-purple-600">Ambos (5 votos)</span>
+                                    <span>38%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-purple-500 h-full rounded-full" style="width: 38%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-blue-600">Cris (1 voto)</span>
+                                    <span>8%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-blue-500 h-full rounded-full" style="width: 8%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 4: Consentidor -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-heading font-bold text-slate-800 text-sm sm:text-base">🍭 Más Consentidor</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-bold">Cris Regaloneador</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">¿Quién dirá primero que "SÍ" a un dulce o juguete?</p>
+                        
+                        <div class="space-y-2 pt-1">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-blue-600">Cris (8 votos) 🏆</span>
+                                    <span>62%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-blue-500 h-full rounded-full" style="width: 62%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-pink-600">Javi (5 votos)</span>
+                                    <span>38%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-pink-500 h-full rounded-full" style="width: 38%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: GALERIA DE BOLETOS ================= -->
+        <section id="sec-galeria" class="tab-content hidden space-y-4">
+            <!-- Search & Filters -->
+            <div class="glass-card p-3.5 rounded-3xl shadow-soft border border-white flex flex-col sm:flex-row gap-2.5 items-center justify-between">
+                <div class="relative w-full sm:w-80">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                    <input type="text" id="ticket-search" oninput="filterTickets()" placeholder="Buscar por apostador o travesura..." class="w-full pl-9 pr-4 py-2 rounded-2xl border border-slate-200 text-base sm:text-xs font-medium focus:outline-none focus:ring-2 focus:ring-borja-400 bg-white">
+                </div>
+
+                <!-- Ruleta Mini Game Trigger -->
+                <button onclick="openRuletaModal()" class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold text-xs rounded-2xl shadow-md hover:opacity-95 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="dices" class="w-4 h-4"></i>
+                    <span>🎲 Ruleta Aleatoria de Travesuras</span>
+                </button>
+            </div>
+
+            <!-- Tickets Grid -->
+            <div id="tickets-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 5: ESTADISTICAS ================= -->
+        <section id="sec-stats" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                <!-- Stat 1: Chela vs Maya -->
+                <div class="glass-card p-5 rounded-3xl shadow-soft border border-white flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="font-heading font-bold text-slate-800 text-base">🐶 Mejor Amig@ Perruno</h3>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">Duelo Perruno</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-3">¿Con quién jugará más Borja?</p>
+                        
+                        <div class="space-y-3">
+                            <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200 flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-2xl">🐕</span>
+                                    <div>
+                                        <p class="font-bold text-amber-900 text-xs sm:text-sm">Chela</p>
+                                        <p class="text-[10px] text-amber-700">10 votos (77%)</p>
+                                    </div>
+                                </div>
+                                <span class="text-lg font-black text-amber-600">🏆</span>
+                            </div>
+
+                            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-2xl">🐩</span>
+                                    <div>
+                                        <p class="font-bold text-slate-800 text-xs sm:text-sm">Maya</p>
+                                        <p class="text-[10px] text-slate-500">3 votos (23%)</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-400">2do Lugar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stat 2: Deporte Favorito -->
+                <div class="glass-card p-5 rounded-3xl shadow-soft border border-white">
+                    <h3 class="font-heading font-bold text-slate-800 text-base mb-0.5">🏔️ Deporte Favorito</h3>
+                    <p class="text-xs text-slate-500 mb-3">Predicciones de hobbies</p>
+                    
+                    <div class="space-y-2.5">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span>🏔️ Cerro / Outdoor (6)</span>
+                                <span>46%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full" style="width: 46%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span>🚲 Bici / MTB (4)</span>
+                                <span>31%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-amber-500 h-full rounded-full" style="width: 31%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span>⚽ Fútbol (2)</span>
+                                <span>15%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-sky-500 h-full rounded-full" style="width: 15%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span>🏊 Natación (1)</span>
+                                <span>8%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: 8%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stat 3: Primera Palabra -->
+                <div class="glass-card p-5 rounded-3xl shadow-soft border border-white">
+                    <h3 class="font-heading font-bold text-slate-800 text-base mb-0.5">🗣️ Primera Palabra</h3>
+                    <p class="text-xs text-slate-500 mb-3">¿A quién nombrará primero?</p>
+                    
+                    <div class="space-y-2 text-xs">
+                        <div class="p-2 bg-pink-50 rounded-xl border border-pink-100 flex justify-between items-center">
+                            <span class="font-bold text-pink-900">Mamá / Mama</span>
+                            <span class="bg-pink-200 text-pink-800 px-2 py-0.5 rounded font-extrabold text-[10px]">4 Votos</span>
+                        </div>
+                        <div class="p-2 bg-amber-50 rounded-xl border border-amber-100 flex justify-between items-center">
+                            <span class="font-bold text-amber-900">Maya / Chela</span>
+                            <span class="bg-amber-200 text-amber-800 px-2 py-0.5 rounded font-extrabold text-[10px]">3 Votos</span>
+                        </div>
+                        <div class="p-2 bg-sky-50 rounded-xl border border-sky-100 flex justify-between items-center">
+                            <span class="font-bold text-sky-900">Menciones Pato/Matías/Flo/Tata</span>
+                            <span class="bg-sky-200 text-sky-800 px-2 py-0.5 rounded font-extrabold text-[10px]">4 Votos</span>
+                        </div>
+                        <div class="p-2 bg-purple-50 rounded-xl border border-purple-100 flex justify-between items-center">
+                            <span class="font-bold text-purple-900">Cami / Ignacio</span>
+                            <span class="bg-purple-200 text-purple-800 px-2 py-0.5 rounded font-extrabold text-[10px]">2 Votos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stat 4: Distribución de Peso -->
+                <div class="lg:col-span-3 glass-card p-5 rounded-3xl shadow-soft border border-white">
+                    <h3 class="font-heading font-bold text-slate-800 text-base sm:text-lg mb-0.5">🏋️‍♂️ Espectro del Peso Estimado (Kg)</h3>
+                    <p class="text-xs text-slate-500 mb-4">Desde los 2.5 kg más livianos hasta los 4.2 kg gigantes de la apuesta</p>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center">
+                        <div class="p-2.5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                            <p class="text-xs font-bold text-emerald-600">2.5 Kg</p>
+                            <p class="text-xs font-extrabold text-slate-800 mt-0.5">Pato</p>
+                            <span class="text-[9px] text-slate-400">Pluma 🪶</span>
+                        </div>
+                        <div class="p-2.5 bg-sky-50 rounded-2xl border border-sky-100">
+                            <p class="text-xs font-bold text-sky-600">2.8 - 3.0 Kg</p>
+                            <p class="text-xs font-extrabold text-slate-800 mt-0.5">José Ignacio, Alicia, Flo</p>
+                            <span class="text-[9px] text-slate-400">3 Apuestas</span>
+                        </div>
+                        <div class="p-2.5 bg-blue-50 rounded-2xl border border-blue-100">
+                            <p class="text-xs font-bold text-blue-600">3.1 - 3.3 Kg</p>
+                            <p class="text-xs font-extrabold text-slate-800 mt-0.5">Panchi, Cristian Castro</p>
+                            <span class="text-[9px] text-slate-400">2 Apuestas</span>
+                        </div>
+                        <div class="p-2.5 bg-purple-50 rounded-2xl border border-purple-100">
+                            <p class="text-xs font-bold text-purple-600">3.4 - 3.5 Kg</p>
+                            <p class="text-xs font-extrabold text-slate-800 mt-0.5">Camila, Cris, Lore, Toti, Madre</p>
+                            <span class="text-[9px] text-slate-400">5 Apuestas (Moda)</span>
+                        </div>
+                        <div class="p-2.5 bg-amber-50 rounded-2xl border border-amber-100">
+                            <p class="text-xs font-bold text-amber-600">4.0 Kg</p>
+                            <p class="text-xs font-extrabold text-slate-800 mt-0.5">Claudia Silva</p>
+                            <span class="text-[9px] text-slate-400">Grandote 🏋️</span>
+                        </div>
+                        <div class="p-2.5 bg-rose-50 rounded-2xl border border-rose-100">
+                            <p class="text-xs font-bold text-rose-600">4.2 Kg</p>
+                            <p class="text-xs font-extrabold text-slate-800 mt-0.5">Matías</p>
+                            <span class="text-[9px] text-slate-400">Record Sumo 👑</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Ruleta de Travesuras -->
+    <div id="ruleta-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-md z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="glass-card bg-white max-w-md w-full rounded-t-3xl sm:rounded-3xl shadow-2xl p-5 text-center space-y-4 border border-white animate-in slide-in-from-bottom sm:zoom-in duration-200">
+            <div class="w-14 h-14 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto text-2xl shadow-inner">
+                🎲
+            </div>
+            <div>
+                <h3 class="font-heading text-xl font-bold text-slate-800">Ruleta de Travesuras</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Saca una travesura al azar de los boletos de Borja.</p>
+            </div>
+
+            <div id="ruleta-box" class="p-5 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border border-purple-200 min-h-[110px] flex flex-col items-center justify-center space-y-1.5">
+                <p id="ruleta-author" class="font-bold text-purple-900 text-sm sm:text-base">¡Haz clic en girar!</p>
+                <p id="ruleta-text" class="text-xs text-slate-600 italic">Aquí aparecerá una travesura inesperada...</p>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="spinRuleta()" class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md hover:opacity-95 transition-all">
+                    🎰 Girar Ruleta
+                </button>
+                <button onclick="closeRuletaModal()" class="px-4 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs sm:text-sm hover:bg-slate-200 transition-colors">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BETS = [
+            {
+                ticket: "374",
+                apostador: "Camila",
+                fecha: "2026-10-31",
+                jornada: "AM",
+                peso: 3.5,
+                ojos: "Azul",
+                pelo: "Castaño",
+                parecido: "Cris",
+                parecidoCris: "Ojos",
+                parecidoJavi: "Nariz",
+                primeraPalabra: "Cami",
+                deporte: "Nadar",
+                personalidad: "Analítico/a",
+                perro: "Maya",
+                actividad: "Acuarios",
+                travesura: "Tirar la cola de la chela",
+                madrugadas: "Cris",
+                panales: "Cris",
+                paparazzi: "Ambos",
+                consentidor: "Javi",
+                capricho: "Javi"
+            },
+            {
+                ticket: "437",
+                apostador: "José Ignacio M.",
+                fecha: "2026-11-06",
+                jornada: "AM",
+                peso: 2.8,
+                ojos: "Amarillos",
+                pelo: "Ginger",
+                parecido: "Javi",
+                parecidoCris: "Pelo",
+                parecidoJavi: "Orejas",
+                primeraPalabra: "Ignacio",
+                deporte: "Bici",
+                personalidad: "Analítico/a",
+                perro: "Maya",
+                actividad: "Dicha",
+                travesura: "Romper vasos",
+                madrugadas: "Cris",
+                panales: "Javi",
+                paparazzi: "Ambos",
+                consentidor: "Cris",
+                capricho: "Javi"
+            },
+            {
+                ticket: "990",
+                apostador: "Cris",
+                fecha: "2026-10-26",
+                jornada: "AM",
+                peso: 3.5,
+                ojos: "Azul/Verde",
+                pelo: "Rubio",
+                parecido: "50/50",
+                parecidoCris: "Nariz",
+                parecidoJavi: "Ojos",
+                primeraPalabra: "Chela",
+                deporte: "Cerro",
+                personalidad: "Aventurero/a",
+                perro: "Chela",
+                actividad: "Jugar con la Chela",
+                travesura: "Darle comida a los perros",
+                madrugadas: "Cris",
+                panales: "Javi",
+                paparazzi: "Javi",
+                consentidor: "Cris",
+                capricho: "Cris"
+            },
+            {
+                ticket: "961",
+                apostador: "Alicia Correa",
+                fecha: "2026-10-18",
+                jornada: "AM",
+                peso: 3.0,
+                ojos: "Azules",
+                pelo: "Rubio",
+                parecido: "50/50",
+                parecidoCris: "En los ojos",
+                parecidoJavi: "En el carácter",
+                primeraPalabra: "Mamá",
+                deporte: "Cerro",
+                personalidad: "Analítico/a",
+                perro: "Maya",
+                actividad: "Escalar",
+                travesura: "Pintar la pared",
+                madrugadas: "Ambos",
+                panales: "Cris",
+                paparazzi: "Ambos",
+                consentidor: "Cris",
+                capricho: "Cris"
+            },
+            {
+                ticket: "493",
+                apostador: "Lore",
+                fecha: "2026-10-18",
+                jornada: "AM",
+                peso: 3.5,
+                ojos: "Azules",
+                pelo: "Rubio",
+                parecido: "Cris",
+                parecidoCris: "En lo dulce",
+                parecidoJavi: "En su alegría",
+                primeraPalabra: "Mamá",
+                deporte: "Cerro",
+                personalidad: "Creativo/a",
+                perro: "Chela",
+                actividad: "Estar en naturaleza",
+                travesura: "Comerse una mermelada escondido",
+                madrugadas: "Javi",
+                panales: "Cris",
+                paparazzi: "Javi",
+                consentidor: "Cris",
+                capricho: "Cris"
+            },
+            {
+                ticket: "987",
+                apostador: "Toti",
+                fecha: "2026-10-23",
+                jornada: "AM",
+                peso: 3.4,
+                ojos: "Verde",
+                pelo: "Rubio",
+                parecido: "—",
+                parecidoCris: "Ojos",
+                parecidoJavi: "Boca",
+                primeraPalabra: "Mama",
+                deporte: "Bici",
+                personalidad: "Aventurero/a",
+                perro: "Chela",
+                actividad: "Jugar con la tía feña",
+                travesura: "Rayar la pared",
+                madrugadas: "Ambos",
+                panales: "Cris",
+                paparazzi: "Cris",
+                consentidor: "Ambos",
+                capricho: "Cris"
+            },
+            {
+                ticket: "998",
+                apostador: "Cristian Castro",
+                fecha: "2026-10-16",
+                jornada: "AM",
+                peso: 3.25,
+                ojos: "Café",
+                pelo: "Rubio",
+                parecido: "50/50",
+                parecidoCris: "La personalidad",
+                parecidoJavi: "Lo preocupado por su familia",
+                primeraPalabra: "Tata",
+                deporte: "Bici",
+                personalidad: "Analítico/a",
+                perro: "Chela",
+                actividad: "Dormir",
+                travesura: "Cuando esté con su Tata Cristian",
+                madrugadas: "Ambos",
+                panales: "Cris",
+                paparazzi: "Javi",
+                consentidor: "Javi",
+                capricho: "Javi"
+            },
+            {
+                ticket: "259",
+                apostador: "Pato",
+                fecha: "2026-11-06",
+                jornada: "AM",
+                peso: 2.5,
+                ojos: "Verdes",
+                pelo: "Castaño",
+                parecido: "50/50",
+                parecidoCris: "Cara",
+                parecidoJavi: "Carácter",
+                primeraPalabra: "Pato",
+                deporte: "Bici",
+                personalidad: "Aventurero/a",
+                perro: "Chela",
+                actividad: "MTB Pro Rider",
+                travesura: "Romper una plata y un ventanal con piedra",
+                madrugadas: "Cris",
+                panales: "Cris",
+                paparazzi: "Javi",
+                consentidor: "Ambos",
+                capricho: "Javi"
+            },
+            {
+                ticket: "386",
+                apostador: "Claudia Silva",
+                fecha: "2026-10-28",
+                jornada: "AM",
+                peso: 4.0,
+                ojos: "Pardos",
+                pelo: "Castaño",
+                parecido: "Cris",
+                parecidoCris: "Nariz",
+                parecidoJavi: "Los ojos",
+                primeraPalabra: "Mama",
+                deporte: "Cerro",
+                personalidad: "Aventurero/a",
+                perro: "Chela",
+                actividad: "Atletismo",
+                travesura: "Comer dulces",
+                madrugadas: "Ambos",
+                panales: "Ambos",
+                paparazzi: "Ambos",
+                consentidor: "Cris",
+                capricho: "Cris"
+            },
+            {
+                ticket: "729",
+                apostador: "Panchi",
+                fecha: "2026-10-22",
+                jornada: "AM",
+                peso: 3.1,
+                ojos: "Café Oscuro",
+                pelo: "Castaño Claro",
+                parecido: "Javi",
+                parecidoCris: "Pelo",
+                parecidoJavi: "Ojos!!",
+                primeraPalabra: "Maya",
+                deporte: "Cerro",
+                personalidad: "Aventurero/a",
+                perro: "Chela",
+                actividad: "Parque con perris",
+                travesura: "Cacuca en mudador",
+                madrugadas: "Javi",
+                panales: "Cris",
+                paparazzi: "Javi",
+                consentidor: "Cris",
+                capricho: "Cris"
+            },
+            {
+                ticket: "279",
+                apostador: "Florencia Lutz",
+                fecha: "2026-11-01",
+                jornada: "AM",
+                peso: 3.0,
+                ojos: "Azules",
+                pelo: "Castaño Claro",
+                parecido: "Javi",
+                parecidoCris: "Colores",
+                parecidoJavi: "Forma de la cara, ojos, mandíbula",
+                primeraPalabra: "Flo",
+                deporte: "Fútbol",
+                personalidad: "Aventurero/a",
+                perro: "Chela",
+                actividad: "Jugar fútbol",
+                travesura: "Tirar el celular al WC",
+                madrugadas: "Javi",
+                panales: "Cris",
+                paparazzi: "Javi",
+                consentidor: "Cris",
+                capricho: "Cris"
+            },
+            {
+                ticket: "135",
+                apostador: "Matías",
+                fecha: "2026-10-30",
+                jornada: "AM",
+                peso: 4.2,
+                ojos: "Verdes",
+                pelo: "Castaño Claro",
+                parecido: "Javi",
+                parecidoCris: "Ojos",
+                parecidoJavi: "Cara",
+                primeraPalabra: "Matías",
+                deporte: "Fútbol",
+                personalidad: "Soñador/a",
+                perro: "Chela",
+                actividad: "Tomar",
+                travesura: "Pintar una muralla",
+                madrugadas: "Cris",
+                panales: "Cris",
+                paparazzi: "Ambos",
+                consentidor: "Cris",
+                capricho: "Javi"
+            },
+            {
+                ticket: "196",
+                apostador: "Madre",
+                fecha: "2026-10-20",
+                jornada: "PM",
+                peso: 3.4,
+                ojos: "Café",
+                pelo: "Castaño Claro",
+                parecido: "50/50",
+                parecidoCris: "Nariz y boca",
+                parecidoJavi: "Ojos y pómulos",
+                primeraPalabra: "Maya",
+                deporte: "Cerro",
+                personalidad: "Aventurero/a",
+                perro: "Chela",
+                actividad: "Tirarle la cola a la Chela",
+                travesura: "Regalarle comida a la Chela",
+                madrugadas: "Ambos",
+                panales: "Ambos",
+                paparazzi: "Javi",
+                consentidor: "Ambos",
+                capricho: "Cris"
+            }
+        ];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+
+            lucide.createIcons();
+        }
+
+        function renderCalendar() {
+            const octGrid = document.getElementById('grid-octubre');
+            const novGrid = document.getElementById('grid-noviembre');
+
+            // Octubre 2026
+            let octHtml = '';
+            for(let i=0; i<3; i++) {
+                octHtml += `<div class="p-1 sm:p-2 bg-slate-50/40 rounded-xl border border-dashed border-slate-200"></div>`;
+            }
+
+            for(let d=1; d<=31; d++) {
+                const dateStr = `2026-10-${d < 10 ? '0' + d : d}`;
+                const betsForDay = BETS.filter(b => b.fecha === dateStr);
+                const hasBets = betsForDay.length > 0;
+
+                octHtml += `
+                    <div onclick="${hasBets ? `openDateModal('${dateStr}')` : ''}" 
+                         class="min-h-[54px] sm:min-h-[76px] p-1 sm:p-2 rounded-xl sm:rounded-2xl border transition-all ${hasBets ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-300 shadow-sm active:scale-95 cursor-pointer' : 'bg-white/60 border-slate-100 text-slate-400'} flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-[11px] sm:text-xs ${hasBets ? 'text-amber-900 font-heading' : 'text-slate-400'}">${d}</span>
+                            ${hasBets ? `<span class="px-1 py-0.2 sm:px-1.5 sm:py-0.5 text-[9px] sm:text-[10px] font-extrabold bg-amber-500 text-white rounded-full leading-none">${betsForDay.length}</span>` : ''}
+                        </div>
+                        ${hasBets ? `
+                            <!-- Mobile Compact Badge -->
+                            <div class="sm:hidden mt-0.5 flex items-center justify-center bg-amber-200/60 text-amber-900 text-[9px] font-extrabold py-0.5 rounded-md">
+                                🎟️ ${betsForDay.length}
+                            </div>
+                            <!-- Desktop Detailed List -->
+                            <div class="hidden sm:block mt-1 space-y-0.5">
+                                ${betsForDay.map(b => `<p class="text-[10px] font-bold text-amber-800 truncate">🎟️ ${b.apostador}</p>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            octGrid.innerHTML = octHtml;
+
+            // Noviembre 2026
+            let novHtml = '';
+            for(let i=0; i<6; i++) {
+                novHtml += `<div class="p-1 sm:p-2 bg-slate-50/40 rounded-xl border border-dashed border-slate-200"></div>`;
+            }
+
+            for(let d=1; d<=30; d++) {
+                const dateStr = `2026-11-${d < 10 ? '0' + d : d}`;
+                const betsForDay = BETS.filter(b => b.fecha === dateStr);
+                const hasBets = betsForDay.length > 0;
+
+                novHtml += `
+                    <div onclick="${hasBets ? `openDateModal('${dateStr}')` : ''}" 
+                         class="min-h-[54px] sm:min-h-[76px] p-1 sm:p-2 rounded-xl sm:rounded-2xl border transition-all ${hasBets ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-300 shadow-sm active:scale-95 cursor-pointer' : 'bg-white/60 border-slate-100 text-slate-400'} flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-[11px] sm:text-xs ${hasBets ? 'text-amber-900 font-heading' : 'text-slate-400'}">${d}</span>
+                            ${hasBets ? `<span class="px-1 py-0.2 sm:px-1.5 sm:py-0.5 text-[9px] sm:text-[10px] font-extrabold bg-amber-500 text-white rounded-full leading-none">${betsForDay.length}</span>` : ''}
+                        </div>
+                        ${hasBets ? `
+                            <div class="sm:hidden mt-0.5 flex items-center justify-center bg-amber-200/60 text-amber-900 text-[9px] font-extrabold py-0.5 rounded-md">
+                                🎟️ ${betsForDay.length}
+                            </div>
+                            <div class="hidden sm:block mt-1 space-y-0.5">
+                                ${betsForDay.map(b => `<p class="text-[10px] font-bold text-amber-800 truncate">🎟️ ${b.apostador}</p>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            novGrid.innerHTML = novHtml;
+        }
+
+        function openDateModal(dateStr) {
+            const betsForDay = BETS.filter(b => b.fecha === dateStr);
+            const modal = document.getElementById('date-modal');
+            const modalTitle = document.getElementById('modal-date-title');
+            const modalBody = document.getElementById('modal-date-body');
+
+            const dateParts = dateStr.split('-');
+            const formattedDate = `${parseInt(dateParts[2])} de ${dateParts[1] === '10' ? 'Octubre' : 'Noviembre'}`;
+            modalTitle.innerText = formattedDate;
+
+            modalBody.innerHTML = betsForDay.map(b => `
+                <div class="p-3.5 bg-gradient-to-br from-borja-50 to-sky-50 rounded-2xl border border-borja-200 space-y-2.5">
+                    <div class="flex items-center justify-between border-b border-borja-200/60 pb-2">
+                        <div>
+                            <span class="text-[9px] bg-borja-500 text-white font-bold px-2 py-0.5 rounded-full">Boleto #${b.ticket}</span>
+                            <h5 class="font-heading font-extrabold text-slate-800 text-base mt-0.5">${b.apostador}</h5>
+                        </div>
+                        <span class="text-[11px] font-bold text-borja-700 bg-white px-2 py-1 rounded-lg border border-borja-200">
+                            ⚖️ ${b.peso} kg (${b.jornada})
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-1.5 text-xs">
+                        <p><span class="text-slate-400">👀 Ojos:</span> <strong class="text-slate-700">${b.ojos}</strong></p>
+                        <p><span class="text-slate-400">💈 Pelo:</span> <strong class="text-slate-700">${b.pelo}</strong></p>
+                        <p><span class="text-slate-400">🧬 Parecido:</span> <strong class="text-slate-700">${b.parecido}</strong></p>
+                        <p><span class="text-slate-400">🗣️ 1ra Palabra:</span> <strong class="text-slate-700">${b.primeraPalabra}</strong></p>
+                    </div>
+
+                    <div class="p-2.5 bg-white rounded-xl text-xs space-y-0.5 border border-slate-100">
+                        <p class="text-purple-700 font-bold text-[10px] uppercase">😈 Primera Travesura:</p>
+                        <p class="text-slate-600 italic">"${b.travesura}"</p>
+                    </div>
+                </div>
+            `).join('');
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('date-modal').classList.add('hidden');
+        }
+
+        function calculateWinner() {
+            const realDateStr = document.getElementById('sim-date').value;
+            const realTime = document.getElementById('sim-time').value;
+            const realWeight = parseFloat(document.getElementById('sim-weight').value) || 3.4;
+            const realEyes = document.getElementById('sim-eyes').value;
+            const realHair = document.getElementById('sim-hair').value;
+            const realRessemble = document.getElementById('sim-resemble').value;
+
+            const realDate = new Date(realDateStr);
+
+            const scoredBets = BETS.map(b => {
+                let score = 0;
+
+                // Diferencia en días (Máx 50 pts)
+                const bDate = new Date(b.fecha);
+                const diffTime = Math.abs(realDate - bDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const datePts = Math.max(0, 50 - (diffDays * 7));
+                score += datePts;
+
+                // Jornada (Máx 15 pts)
+                if (b.jornada === realTime) {
+                    score += 15;
+                }
+
+                // Peso (Máx 20 pts)
+                const weightDiff = Math.abs(b.peso - realWeight);
+                const weightPts = Math.max(0, 20 - (weightDiff * 15));
+                score += weightPts;
+
+                // Parecido (Máx 15 pts)
+                if (b.parecido.toLowerCase() === realRessemble.toLowerCase()) {
+                    score += 15;
+                } else if (b.parecido === '50/50') {
+                    score += 8;
+                }
+
+                return {
+                    ...b,
+                    score: Math.round(score),
+                    diffDays: diffDays
+                };
+            });
+
+            scoredBets.sort((a, b) => b.score - a.score);
+
+            // Render Podium
+            const podiumContainer = document.getElementById('podium-container');
+            podiumContainer.innerHTML = `
+                <!-- 2nd Place -->
+                <div class="glass-card p-2 sm:p-3 rounded-2xl text-center border border-slate-200 flex flex-col justify-end">
+                    <span class="text-xl sm:text-2xl">🥈</span>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 truncate">${scoredBets[1].apostador}</p>
+                    <p class="text-xs sm:text-sm font-black text-borja-600">${scoredBets[1].score} pts</p>
+                    <span class="text-[8px] sm:text-[9px] text-slate-400">2do Lugar</span>
+                </div>
+
+                <!-- 1st Place -->
+                <div class="bg-gradient-to-br from-amber-100 to-amber-200 p-2 sm:p-3 rounded-2xl text-center border border-amber-300 shadow-md flex flex-col justify-end transform -translate-y-1.5">
+                    <span class="text-2xl sm:text-3xl animate-bounce">👑</span>
+                    <p class="text-[11px] sm:text-xs font-extrabold text-amber-950 mt-0.5 truncate">${scoredBets[0].apostador}</p>
+                    <p class="text-xs sm:text-sm font-black text-amber-800">${scoredBets[0].score} pts</p>
+                    <span class="text-[9px] font-bold text-amber-800">1er Lugar</span>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="glass-card p-2 sm:p-3 rounded-2xl text-center border border-slate-200 flex flex-col justify-end">
+                    <span class="text-xl sm:text-2xl">🥉</span>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-800 mt-0.5 truncate">${scoredBets[2].apostador}</p>
+                    <p class="text-xs sm:text-sm font-black text-borja-600">${scoredBets[2].score} pts</p>
+                    <span class="text-[8px] sm:text-[9px] text-slate-400">3er Lugar</span>
+                </div>
+            `;
+
+            // Render Table
+            const tbody = document.getElementById('ranking-tbody');
+            tbody.innerHTML = scoredBets.map((b, idx) => `
+                <tr class="${idx === 0 ? 'bg-amber-50/70 font-bold' : ''}">
+                    <td class="py-2 px-1.5">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}</td>
+                    <td class="py-2 px-1.5 truncate max-w-[110px]">${b.apostador}</td>
+                    <td class="py-2 px-1.5 text-slate-500">${b.fecha.split('-').slice(1).join('/')}</td>
+                    <td class="py-2 px-1.5 text-right font-black ${idx === 0 ? 'text-amber-700' : 'text-borja-600'}">${b.score} pts</td>
+                </tr>
+            `).join('');
+
+            // Winner Display
+            document.getElementById('winner-name-display').innerText = `¡${scoredBets[0].apostador} gana con ${scoredBets[0].score} Pts! 🎉`;
+        }
+
+        function renderTickets(filterText = '') {
+            const grid = document.getElementById('tickets-grid');
+            const search = filterText.toLowerCase();
+
+            const filtered = BETS.filter(b => 
+                b.apostador.toLowerCase().includes(search) ||
+                b.travesura.toLowerCase().includes(search) ||
+                b.actividad.toLowerCase().includes(search) ||
+                b.primeraPalabra.toLowerCase().includes(search)
+            );
+
+            grid.innerHTML = filtered.map(b => `
+                <div class="glass-card p-4 rounded-3xl shadow-card border border-white hover:shadow-hover transition-all duration-200 space-y-3 flex flex-col justify-between">
+                    <div>
+                        <!-- Ticket Header -->
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
+                            <div>
+                                <span class="text-[9px] font-bold text-borja-600 bg-borja-50 px-2 py-0.5 rounded-full border border-borja-100">Boleto #${b.ticket}</span>
+                                <h4 class="font-heading font-extrabold text-slate-800 text-base mt-0.5">${b.apostador}</h4>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-xl border border-amber-200 inline-block">
+                                    🗓️ ${b.fecha.split('-').slice(1).join('/')}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Main Betting Details Grid -->
+                        <div class="grid grid-cols-2 gap-1.5 text-xs mb-2.5">
+                            <div class="p-2 bg-slate-50/80 rounded-xl">
+                                <p class="text-slate-400 text-[9px]">Peso Estimado</p>
+                                <p class="font-bold text-slate-700">${b.peso} Kg (${b.jornada})</p>
+                            </div>
+                            <div class="p-2 bg-slate-50/80 rounded-xl">
+                                <p class="text-slate-400 text-[9px]">Parecido a</p>
+                                <p class="font-bold text-slate-700">${b.parecido}</p>
+                            </div>
+                            <div class="p-2 bg-slate-50/80 rounded-xl">
+                                <p class="text-slate-400 text-[9px]">Ojos / Pelo</p>
+                                <p class="font-bold text-slate-700 truncate">${b.ojos} / ${b.pelo}</p>
+                            </div>
+                            <div class="p-2 bg-slate-50/80 rounded-xl">
+                                <p class="text-slate-400 text-[9px]">1ra Palabra</p>
+                                <p class="font-bold text-slate-700">${b.primeraPalabra}</p>
+                            </div>
+                        </div>
+
+                        <!-- Fun Travesura Quote -->
+                        <div class="p-2.5 bg-purple-50/80 rounded-2xl border border-purple-100 space-y-0.5">
+                            <p class="text-[9px] font-bold text-purple-700 uppercase tracking-wider">😈 Primera Travesura:</p>
+                            <p class="text-xs text-slate-700 font-medium italic">"${b.travesura}"</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500">
+                        <span>🐶 ${b.perro}</span>
+                        <span>🏔️ ${b.deporte}</span>
+                        <span>✨ ${b.personalidad}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function filterTickets() {
+            const val = document.getElementById('ticket-search').value;
+            renderTickets(val);
+        }
+
+        function openRuletaModal() {
+            document.getElementById('ruleta-modal').classList.remove('hidden');
+        }
+
+        function closeRuletaModal() {
+            document.getElementById('ruleta-modal').classList.add('hidden');
+        }
+
+        function spinRuleta() {
+            const author = document.getElementById('ruleta-author');
+            const text = document.getElementById('ruleta-text');
+
+            author.innerText = "Girando...";
+            text.innerText = "🔍 Buscando travesura...";
+
+            let count = 0;
+            const interval = setInterval(() => {
+                const randomBet = BETS[Math.floor(Math.random() * BETS.length)];
+                author.innerText = `🎟️ ${randomBet.apostador}`;
+                text.innerText = `"${randomBet.travesura}"`;
+                count++;
+
+                if (count > 12) {
+                    clearInterval(interval);
+                    triggerConfetti();
+                }
+            }, 100);
+        }
+
+        function triggerConfetti() {
+            confetti({
+                particleCount: 70,
+                spread: 60,
+                origin: { y: 0.7 }
+            });
+        }
+
+        window.onload = function() {
+            renderCalendar();
+            renderTickets();
+            calculateWinner();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
